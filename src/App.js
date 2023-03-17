@@ -1,17 +1,29 @@
 import React, { useState } from "react";
 import "./App.css";
 import PdfViewer from "./PdfViewer";
+import DataTable from "./DataTable"; // Import the DataTable component
 import { Container, Grid, TextField, Button } from "@mui/material";
 import logo from "./logo.png";
 
 function App() {
   const [positionNumber, setPositionNumber] = useState(1);
   const [pdfFile, setPdfFile] = useState(null);
-  const [annotations, setAnnotations] = useState([]);
+  const [annotations, setAnnotations] = useState([
+    {
+      id: 1,
+      pageIndex: 0,
+      x: 119,
+      y: 578,
+      scale: { width: 792, height: 612 },
+      number: 1,
+    },
+  ]);
+  
 
   const handleNumberChange = (event) => {
-    setPositionNumber(event.target.value);
+    setPositionNumber(parseInt(event.target.value) || 1);
   };
+  
 
   const handleFileChange = (event) => {
     setPdfFile(event.target.files[0]);
@@ -40,7 +52,6 @@ function App() {
               style={{ display: "none" }}
               id="pdf-file-input"
             />
-  
             <TextField
               // label="Position Number"
               type="number"
@@ -50,13 +61,14 @@ function App() {
               value={positionNumber}
               onChange={handleNumberChange}
               className="position-number-field"
-              style={{ width: "20%", margin: "0" }} // Set the width of the container element and add left margin
+              style={{ width: "20%", margin: "0" }}
               InputProps={{
                 style: {
-                  height: 37, // Adjust the height to match the Upload PDF button
+                  height: 37,
                   padding: "0",
                 },
               }}
+              
             />
             <label htmlFor="pdf-file-input">
               <Button
@@ -75,15 +87,22 @@ function App() {
           </div>
         </div>
       </div>
-      <Container maxWidth="md">
+      <Container maxWidth="xl">
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <PdfViewer
-              positionNumber={positionNumber}
-              pdfFile={pdfFile}
-              annotations={annotations}
-              setAnnotations={setAnnotations}
-            />
+            <div style={{ display: 'flex', overflow: 'auto', width: '100%' }}>
+              <div style={{ minWidth: '40%', flexGrow: 1 }}>
+                <DataTable annotations={annotations} setAnnotations={setAnnotations} />
+              </div>
+              <div style={{ minWidth: '60%', flexGrow: 2, maxWidth: '60%' }}>
+                <PdfViewer
+                  positionNumber={positionNumber}
+                  pdfFile={pdfFile}
+                  annotations={annotations}
+                  setAnnotations={setAnnotations}
+                />
+              </div>
+            </div>
           </Grid>
         </Grid>
       </Container>
@@ -91,6 +110,11 @@ function App() {
   );
   
   
+  
+  
+  
+  
+                
 }
 
 export default App;
