@@ -4,18 +4,13 @@ import './PdfViewer.css';
 import { Box } from '@mui/material';
 import { useMediaQuery } from '@mui/material';
 
-
-const PdfViewer = ({ positionNumber, pdfFile, annotations, setAnnotations }) => {
+const PdfViewer = ({ pdfFile, annotations, setAnnotations, selectedRow, setSelectedRow }) => {
   const [numPages, setNumPages] = React.useState(null);
   const matches = useMediaQuery('(min-width:600px)');
 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
   };
-
-
-
-
 
   const handleClick = useCallback(
     (event, pageIndex) => {
@@ -40,7 +35,7 @@ const PdfViewer = ({ positionNumber, pdfFile, annotations, setAnnotations }) => 
           setAnnotations((prevAnnotations) =>
             prevAnnotations.filter((_, index) => index !== clickedAnnotationIndex)
           );
-        } else {
+        } else if (selectedRow) {
           setAnnotations((prevAnnotations) => [
             ...prevAnnotations,
             {
@@ -51,28 +46,30 @@ const PdfViewer = ({ positionNumber, pdfFile, annotations, setAnnotations }) => 
                 width: width,
                 height: height,
               },
-              number: positionNumber,
+              number: selectedRow.position,
             },
           ]);
+          setSelectedRow(null);
         }
       }
     },
-    [positionNumber, annotations, setAnnotations]
+    [annotations, setAnnotations, selectedRow, setSelectedRow]
   );
+
   return (
     <Box className="pdf-viewer">
       {pdfFile && (
         <Document file={pdfFile} onLoadSuccess={onDocumentLoadSuccess}>
           {Array.from(new Array(numPages), (_, index) => (
             <div key={`page_${index + 1}`} className="pdf-page-container">
-<Page
-  className="pdf-page"
-  onClick={(event) => handleClick(event, index)}
-  pageIndex={index}
-  renderTextLayer={false}
-  renderAnnotationLayer={false}
-  style={{ width: "100%" }}
-/>
+              <Page
+                className="pdf-page"
+                onClick={(event) => handleClick(event, index)}
+                pageIndex={index}
+                renderTextLayer={false}
+                renderAnnotationLayer={false}
+                style={{ width: "100%" }}
+              />
 
               <div className="pdf-annotations">
                 {annotations.map(

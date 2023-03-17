@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import "./App.css";
 import PdfViewer from "./PdfViewer";
-import DataTable from "./DataTable"; // Import the DataTable component
-import { Container, Grid, TextField, Button } from "@mui/material";
+import DataTable from "./DataTable";
+import { Grid, TextField, Button } from "@mui/material";
 import logo from "./logo.png";
+import { Box } from '@mui/material';
 
 function App() {
-  const [positionNumber, setPositionNumber] = useState(1);
   const [pdfFile, setPdfFile] = useState(null);
   const [annotations, setAnnotations] = useState([
     {
@@ -18,12 +18,8 @@ function App() {
       number: 1,
     },
   ]);
-  
 
-  const handleNumberChange = (event) => {
-    setPositionNumber(parseInt(event.target.value) || 1);
-  };
-  
+  const [selectedRow, setSelectedRow] = useState(null);
 
   const handleFileChange = (event) => {
     setPdfFile(event.target.files[0]);
@@ -52,24 +48,6 @@ function App() {
               style={{ display: "none" }}
               id="pdf-file-input"
             />
-            <TextField
-              // label="Position Number"
-              type="number"
-              variant="outlined"
-              size="small"
-              margin="dense"
-              value={positionNumber}
-              onChange={handleNumberChange}
-              className="position-number-field"
-              style={{ width: "20%", margin: "0" }}
-              InputProps={{
-                style: {
-                  height: 37,
-                  padding: "0",
-                },
-              }}
-              
-            />
             <label htmlFor="pdf-file-input">
               <Button
                 variant="contained"
@@ -87,34 +65,35 @@ function App() {
           </div>
         </div>
       </div>
-      <Container maxWidth="xl">
+      <Box m={1}> {/* Add a Box component with margin */}
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <div style={{ display: 'flex', overflow: 'auto', width: '100%' }}>
-              <div style={{ minWidth: '40%', flexGrow: 1 }}>
-                <DataTable annotations={annotations} setAnnotations={setAnnotations} />
-              </div>
-              <div style={{ minWidth: '60%', flexGrow: 2, maxWidth: '60%' }}>
-                <PdfViewer
-                  positionNumber={positionNumber}
-                  pdfFile={pdfFile}
+            <div style={{ display: 'flex', flexDirection: 'row', width: '100%', gap: '1rem' }}>
+              <div style={{ flexGrow: 1, flexBasis: '40%', minWidth: '40%', maxWidth: '40%' }}>
+                <DataTable
                   annotations={annotations}
                   setAnnotations={setAnnotations}
+                  selectedRow={selectedRow}
+                  setSelectedRow={setSelectedRow}
                 />
+              </div>
+              <div style={{ flexGrow: 2, flexBasis: '59%', minWidth: '59%', maxWidth: '59%' }}>
+                <div className="pdf-viewer-container">
+                  <PdfViewer
+                    pdfFile={pdfFile}
+                    annotations={annotations}
+                    setAnnotations={setAnnotations}
+                    selectedRow={selectedRow}
+                    setSelectedRow={setSelectedRow}
+                  />
+                </div>
               </div>
             </div>
           </Grid>
         </Grid>
-      </Container>
+      </Box>
     </div>
   );
-  
-  
-  
-  
-  
-  
-                
 }
 
 export default App;
